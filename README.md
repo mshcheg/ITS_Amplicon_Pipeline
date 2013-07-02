@@ -91,5 +91,7 @@ Pipeline for Zanne lab ITS amplicon analysis.
         
         #the input file for this script is often called final_otu_map_mc2.txt 
         python otu_count.py /path/to/final_OTU_file.txt
-        
+        #Generate summery OTU and read plots
+        R CMD BATCH plot_reads_OTUs.R 
+
 13. Extract and plot taxonomic composition of each sample ...
