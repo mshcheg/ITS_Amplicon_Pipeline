@@ -94,4 +94,11 @@ Pipeline for Zanne lab ITS amplicon analysis.
         #Generate summery OTU and read plots
         R CMD BATCH plot_reads_OTUs.R 
 
-13. Extract and plot taxonomic composition of each sample ...
+13. Extract and plot OTU abundance 
+
+14. Extract and plot taxonomic composition
+
+15. Plot rarefaction curves
+
+16. Compute bray curtis and plot PCoA 
+
