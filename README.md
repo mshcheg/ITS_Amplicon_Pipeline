@@ -94,7 +94,10 @@ Pipeline for Zanne lab ITS amplicon analysis.
         #Generate summery OTU and read plots
         R CMD BATCH plot_reads_OTUs.R 
 
-13. Extract and plot OTU abundance 
+13. Extract OTU abundance and generate rank-abundance plots. The slope of a line on a rank-abundance plot is associated with species evenness. If most of the species have a similar number of individuals (high evenness), the line on the graph will have a smaller slope. A horizontal line indicates that all of the species have the same number of individuals. A community that is dominated by one or a few species will have a steep slope.
+
+        python otu_abundance.py /path/to/final_OTU_file.txt 
+        R CMD BATCH plot_rank_abundance.R 
 
 14. Extract and plot taxonomic composition
 
