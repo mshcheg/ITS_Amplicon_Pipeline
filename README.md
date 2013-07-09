@@ -99,9 +99,22 @@ Pipeline for Zanne lab ITS amplicon analysis.
         python otu_abundance.py /path/to/final_OTU_file.txt 
         R CMD BATCH plot_rank_abundance.R 
 
-14. Extract and plot taxonomic composition
+14. Extract and plot taxonomic composition.
 
-15. Plot rarefaction curves
+        #Summarize taxonomy
+        python /path/to/final_OTU_file.txt /path/to/its_12_11_otus/taxonomy/97_otu_taxonomy.txt /path/to/rdp_assigned_taxonomy/rep_set_tax_assignments.txt  
+        #Generate stacked barplots and most abundent taxa plots 
+        R CMD BATCH SummarizeTaxonomy.R
+
+15. Perform rarefaction analysis and plot rarefaction curves. The rarefaction analysis is done using three Qiime scripts. 
+        
+        #Qimme rarefaction analysis
+        multiple_rarefactions.py -i /path/to/final_OTU_file.biom  -m 10 -x 5000 -s 20 -n 10 -o rare_10_5000
+        #-m Minimum number of seqs/sample for rarefaction, -x Maximum number of seqs/sample (inclusive) for rarefaction, -s Size of each steps between the min/max of seqs/sample (e.g. min, min+step... for level <= max).
+        alpha_diversity.py -i rare_10_5000 -o alpha_rare -m observed_species, chao1
+        collate_alpha.py -i alpha_rare -o alpha_collated
+        #plot rarefaction curves 
+        R CMD BATCH plot_rarefaction.R
 
 16. Compute bray curtis and plot PCoA 
 
