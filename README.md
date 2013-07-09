@@ -102,7 +102,7 @@ Pipeline for Zanne lab ITS amplicon analysis.
 14. Extract and plot taxonomic composition.
 
         #Summarize taxonomy
-        python /path/to/final_OTU_file.txt /path/to/its_12_11_otus/taxonomy/97_otu_taxonomy.txt /path/to/rdp_assigned_taxonomy/rep_set_tax_assignments.txt  
+        python otu_to_taxonomy.py /path/to/final_OTU_file.txt /path/to/its_12_11_otus/taxonomy/97_otu_taxonomy.txt /path/to/rdp_assigned_taxonomy/rep_set_tax_assignments.txt  
         #Generate stacked barplots and most abundent taxa plots 
         R CMD BATCH SummarizeTaxonomy.R
 
