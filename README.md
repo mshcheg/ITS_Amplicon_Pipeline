@@ -94,4 +94,31 @@ Pipeline for Zanne lab ITS amplicon analysis.
         #Generate summery OTU and read plots
         R CMD BATCH plot_reads_OTUs.R 
 
-13. Extract and plot taxonomic composition of each sample ...
+13. Extract OTU abundance and generate rank-abundance plots. The slope of a line on a rank-abundance plot is associated with species evenness. If most of the species have a similar number of individuals (high evenness), the line on the graph will have a smaller slope. A horizontal line indicates that all of the species have the same number of individuals. A community that is dominated by one or a few species will have a steep slope.
+
+        python otu_abundance.py /path/to/final_OTU_file.txt 
+        R CMD BATCH plot_rank_abundance.R 
+
+14. Extract and plot taxonomic composition.
+
+        #Summarize taxonomy
+        python otu_to_taxonomy.py /path/to/final_OTU_file.txt /path/to/its_12_11_otus/taxonomy/97_otu_taxonomy.txt /path/to/rdp_assigned_taxonomy/rep_set_tax_assignments.txt  
+        #Generate stacked barplots and most abundent taxa plots 
+        R CMD BATCH SummarizeTaxonomy.R
+
+15. Perform rarefaction analysis and plot rarefaction curves. The rarefaction analysis is done using three Qiime scripts. 
+        
+        #Qimme rarefaction analysis
+        multiple_rarefactions.py -i /path/to/final_OTU_file.biom  -m 10 -x 5000 -s 20 -n 10 -o rare_10_5000
+        #-m Minimum number of seqs/sample for rarefaction, -x Maximum number of seqs/sample (inclusive) for rarefaction, -s Size of each steps between the min/max of seqs/sample (e.g. min, min+step... for level <= max).
+        alpha_diversity.py -i rare_10_5000 -o alpha_rare -m observed_species, chao1
+        collate_alpha.py -i alpha_rare -o alpha_collated
+        #plot rarefaction curves 
+        R CMD BATCH plot_rarefaction.R
+
+16. Compute bray curtis dissimilarity metric for all pairwise comparisons of samples. Done using beta_diversity.py script in Qiime. Plot PCoA.
+        
+        #Generate bray curtis matirx in Qiime 
+        beta_diversity.py -i /path/to/final_OTU_table.biom -o beta_diversity -m bray_curtis
+        #plot PCoA
+        R CMD BATCH plot_pcoa.R
