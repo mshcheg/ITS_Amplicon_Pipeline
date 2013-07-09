@@ -116,5 +116,9 @@ Pipeline for Zanne lab ITS amplicon analysis.
         #plot rarefaction curves 
         R CMD BATCH plot_rarefaction.R
 
-16. Compute bray curtis and plot PCoA 
-
+16. Compute bray curtis dissimilarity metric for all pairwise comparisons of samples. Done using beta_diversity.py script in Qiime. Plot PCoA.
+        
+        #Generate bray curtis matirx in Qiime 
+        beta_diversity.py -i /path/to/final_OTU_table.biom -o beta_diversity -m bray_curtis
+        #plot PCoA
+        R CMD BATCH plot_pcoa.R
