@@ -1,0 +1,20 @@
+To Do:
+
+1. Finish Amplicon_ITS_PipeLine.sh to execute pipeline steps.
+2. Write install.sh.
+
+3. Figure out what kind of filtering to do on OTUs (exclude singletons?)
+4. Figure out how to compress taxonomic levels in barplots (if abundance < mean, group as other?)
+5. coustomize analysis so that plots can be generated for binned data (year 1 vs year 3 ...)
+6. fungal taxonomy pie chart on tree species phylogeny (http://rgraphgallery.blogspot.com/2013/04/rg-plot-bar-or-pie-chart-over-world-map.html)
+7. Fungal phylogeny??  
+8. Heat maps? These are nice ... 
+##Heat Map
+library(reshape)
+xtabs(groups.5$Abundance ~ groups.5$OTU + groups.5$Sample, groups.5)
+melt(table)
+ggplot(table.m.s, aes(groups.5.Sample, groups.5.OTU)) + geom_tile(aes(fill = value), col='white') + scale_fill_gradient(low = "#461b7e", high = "white")+ theme(axis.text.y = element_text(size="8"), axis.text.x = element_text(size="14", angle=45, hjust=1)) + labs(x = "", y = "")
+
+
+
+
