@@ -128,9 +128,17 @@ Plot of must abundent identified phyla for each sample, generated using Summariz
         #plot rarefaction curves 
         R CMD BATCH plot_rarefaction.R
 
+<img src="Images/rarefaction.png" style="width: 30px;"/>
+
+Rarefaction curve generated using plot_rarefaction.R.
+
 16. Compute bray curtis dissimilarity metric for all pairwise comparisons of samples. Done using beta_diversity.py script in Qiime. Plot PCoA.
         
         #Generate bray curtis matirx in Qiime 
         beta_diversity.py -i /path/to/final_OTU_table.biom -o beta_diversity -m bray_curtis
         #plot PCoA
         R CMD BATCH plot_pcoa.R
+
+<img src="Images/pcoa_phylum.png" style="width: 30px;"/>
+
+PCoA plot generated using plot_pcoa.R. Samples are plotted on the left and phyla identified for each sample are plotted on the right, by abundance. This script also generates PCoA plots for classes and orders.  
