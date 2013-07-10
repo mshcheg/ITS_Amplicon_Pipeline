@@ -110,6 +110,14 @@ Rank -abundance plot generated using plot_rank_abundance.R.
         #Generate stacked barplots and most abundent taxa plots 
         R CMD BATCH SummarizeTaxonomy.R
 
+<img src="Images/phylum_barplot.png" style="width: 30px;"/>
+
+Stacked barplot generated using SummarizeTaxonomy.R. Colors represent different phyla. This script will also generate stacked barplots at the class, order, family and genus levels.
+
+<img src="Images/MostAbundentPhyla.png" style="width: 30px;"/>
+
+Plot of must abundent identified phyla for each sample, generated using SummarizeTaxonomy.R. This script will also generate plots for the most abundant classes, orders, families, genera and species.
+ 
 15. Perform rarefaction analysis and plot rarefaction curves. The rarefaction analysis is done using three Qiime scripts. 
         
         #Qimme rarefaction analysis
