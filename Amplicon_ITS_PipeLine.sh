@@ -6,14 +6,43 @@ Pipeline for Zanne lab ITS amplicon analysis.
 INPUT NEED FASTQ FILE R1 AND R2, #CPU for ITSx, Targets file, OPTIONS FOR PRAMS FILE, INFO FOR MAPPING FILE 
 NEEW TO INSTALL ITSx (PATH TO HMMs), PANDASEQ,QIIME  --- SETUP SCRIPT
 CHECK NAMES OF INPUT FILES IN R SCRIPTS
+
+config file:
+
+OutDir = /path/to/output/directory
+R1 = /path/to/R1/file
+R2 = /path/to/R2/file
+
 '''
-PATH TO ITSx HMMs=
+
+CONFIG=$1
+OUTDIR=''
+R1=''
+R2=''
+CPU=''
+TARGETS=''
+PLOTS=''
+DESCRIP=''
+
+while read line; do
+    if 'OutDir' in line:
+        OUTDIR=
+    if 'R1' in line:
+    if 'CPU' in line:
+    if "Targets" in line:
+...
+
+ITSxHMMs= /some/path/specified/in/install
+IDtoTaxonomy= /path/to/its_12_11_otus/taxonomy/                 97_otu_taxonomy.txt
+REFSEQ=/path/to/its_12_11_otus/rep_set/97_otus.fasta
 
 #Count on number of paired end reads in the fastq file and store in the variable READ_NUMBER
-READ_NUMBER=`grep -c "@HWI-M013" yourFile_R1.fastq`
+READ_NUMBER=`grep -c "@HWI-M013" $R1`
 
 #Align paired end reads using PandaSeq
-pandaseq -f R1_file.fastq -r R2_file.fast2 -u unpaired.fasta > paired.fasta
+PANDADIR=$OUTDIR/PandaSeq
+mkdir $PANDADIR && cd $PANDADIR
+pandaseq -f $R1 -r $R2 -u unpaired.fasta > paired.fasta
 #Summarize pandaseq alignment
 ALIGNED=`grep -c ">HWI" paired.fasta` 
 UNALIGNED=`grep -c ">HWI" unpaired.fasta` 
@@ -28,27 +57,23 @@ sed '/>HWI\-/!s/\-/N/' unpaired.fasta > unpaired_N.fasta
 cat unpaired_N.fasta paired.fasta > both.fasta 
 
 #Extraxt ITS reads using HMMs through ITSx
-ITSx -i both.fasta -o ITSx_out -t F -cpu 15 -p /etc/system_scripts/ITSx_1.0b/ITSx_db/HMMs/
+ITSXDIR=$OUTDIR/ITSx
+mkdir ITSXDIR && cd $ITSXDIR
+ITSx -i $PANDADIR/both.fasta -o ITSx_out -t F -cpu $CPU -p $ITSxHMMS
        
 #Format ITS fasta file for use with Qiime pipeline. The targets file maps sequences to barcodes and is provided by the sequenceing center.
-python format_for_qiime.py ITSx_out.full.fasta targets.txt
-
-#Download and uncompress UNITE reference OTUs. 
-MAYBE DO THIS IN THE SETUP        
-wget https://github.com/downloads/qiime/its-reference-otus/its_12_11_otus.tar.gz   
-tar -xzf its_12_11_otus.tar.gz   
-gunzip ./its_12_11_otus/rep_set/97_otus.fasta.gz   
-gunzip ./its_12_11_otus/taxonomy/97_otu_taxonomy.txt.gz
+python format_for_qiime.py $ITSXDIR/ITSx_out.full.fasta $TARGETS
 
 #Create a parameters file called params.txt.
-echo -e "assign_taxonomy:rdp_max_memory 8000\npick_otus:enable_rev_strand_match True\npick_otus:max_accepts 1\npick_otus:max_rejects 8\npick_otus:stepwords 8\npick_otus:word_length 8\nassign_taxonomy:id_to_taxonomy_fp its_12_11_otus/taxonomy/97_otu_taxonomy.txt\nassign_taxonomy:reference_seqs_fp its_12_11_otus/rep_set/97_otus.fasta\nbeta_diversity:metrics bray_curtis" > params.txt
+cd $OUTDIR
+echo -e "assign_taxonomy:rdp_max_memory 8000\npick_otus:enable_rev_strand_match True\npick_otus:max_accepts 1\npick_otus:max_rejects 8\npick_otus:stepwords 8\npick_otus:word_length 8\nassign_taxonomy:id_to_taxonomy_fp $IDtoTAXONOMY\nassign_taxonomy:reference_seqs_fp $REFSEQ\nbeta_diversity:metrics bray_curtis" > params.txt
 
 #Create a mapping file with metadata for each sample called map.txt. This file can be created maually according the the specifications on the Qiime website or automatically using generate_map_file.py.
 #-p is a list of plot ids, -d is a description of the experiment
-python generate_map_file.py -p 3H 4H -d First sequencing run for plots 3H and 4H from Idaho        
+python generate_map_file.py -p $PLOTS -d $DESCRIP        
 
 #Generate 97% simmilarity OTUs using uclust and 97% simmilarity reference OTUs from UNITE. This is done using the pick_open_reference_otus pipeline in Qiime.
-pick_open_reference_otus.py -i inputFile.fasta -r /path/to/its_12_11_otus/rep_set/97_otus.fasta -o output_dir -p /path/to/params.txt --suppress_align_and_tree
+pick_open_reference_otus.py -i OUT FROM PYTHON FORMAT -r $REFSEQ -o output_dir -p /path/to/params.txt --suppress_align_and_tree
 
 #Extract and plot number of sequences and OTUs per sample.
 #the input file for this script is often called final_otu_map_mc2.txt 

@@ -3,10 +3,10 @@ To Do:
 1. Finish Amplicon_ITS_PipeLine.sh to execute pipeline steps.
 2. Write install.sh.
 
-3. Figure out what kind of filtering to do on OTUs (exclude singletons?)
+3. Figure out what kind of filtering to do on OTUs (exclude singletons?, http://joey711.github.io/phyloseq/preprocess.html)
 4. Figure out how to compress taxonomic levels in barplots (if abundance < mean, group as other?)
 5. coustomize analysis so that plots can be generated for binned data (year 1 vs year 3 ...)
-6. fungal taxonomy pie chart on tree species phylogeny (http://rgraphgallery.blogspot.com/2013/04/rg-plot-bar-or-pie-chart-over-world-map.html)
+6. fungal taxonomy pie chart on tree species phylogeny (http://rgraphgallery.blogspot.com/2013/04/rg-plot-bar-or-pie-chart-over-world-map.html, phyloseq: http://joey711.github.io/phyloseq/plot_tree-examples.html, phyloseq R code here: http://joey711.github.io/phyloseq/tutorials-index.html)
 7. Fungal phylogeny??  
 8. Heat maps? These are nice ... 
 ##Heat Map
