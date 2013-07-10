@@ -98,6 +98,10 @@ Pipeline for Zanne lab ITS amplicon analysis.
 
         python otu_abundance.py /path/to/final_OTU_file.txt 
         R CMD BATCH plot_rank_abundance.R 
+        
+<img src="Images/rank_abundance.png" style="width: 30px;"/>
+
+Rank -abundance plot generated using plot_rank_abundance.R.
 
 14. Extract and plot taxonomic composition.
 
