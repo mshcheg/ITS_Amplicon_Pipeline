@@ -3,6 +3,15 @@ library(ggplot2)
 library(ape)
 
 tax <- read.csv("Taxonomy.csv", header=T)
+tax$phylum <- as.character(tax$phylum)
+tax$phylum[tax$phylum == ""] <- "unidentified"
+tax$phylum[tax$phylum == "Incertae_sedis"] <- "unidentified"
+tax$class <- as.character(tax$class)
+tax$class[tax$class == ""] <- "unidentified"
+tax$class[tax$class == "Incertae_sedis"] <- "unidentified"
+tax$order <- as.character(tax$order)
+tax$order[tax$order == ""] <- "unidentified"
+tax$order[tax$order == "Incertae_sedis"] <- "unidentified"
 phy <- table(tax$phylum, tax$sample)
 class <- table(tax$class, tax$sample)
 order <- table(tax$order, tax$sample)
@@ -32,15 +41,15 @@ test <- data.frame(class)
 test <- subset(test, test$Freq != 0)
 new <- merge(test, df, by="Var2")
 pdf("pcoa_class.pdf", width=19, height=8)
-p2 <- ggplot(new, aes(x = new$Axis.1, y= new$Axis.2, label=new$Var1)) + geom_point(aes(size=new$Freq, color = new$Var1)) + theme_bw() + scale_size(guide=F, range = c(6,15)) + xlab("Axis.1") + ylab("Axis.2") + scale_colour_discrete(name ="Phylum")
+p2 <- ggplot(new, aes(x = new$Axis.1, y= new$Axis.2, label=new$Var1)) + geom_point(aes(size=new$Freq, color = new$Var1)) + theme_bw() + scale_size(guide=F, range = c(6,15)) + xlab("Axis.1") + ylab("Axis.2") + scale_colour_discrete(name ="Class")
 grid.arrange(p1, p2, ncol=2)
 dev.off()
 
 test <- data.frame(order)
 test <- subset(test, test$Freq != 0)
 new <- merge(test, df, by="Var2")
-pdf("pcoa_order.pdf", width=19, height=8)
-p2 <- ggplot(new, aes(x = new$Axis.1, y= new$Axis.2, label=new$Var1)) + geom_point(aes(size=new$Freq, color = new$Var1)) + theme_bw() + scale_size(guide=F, range = c(6,15)) + xlab("Axis.1") + ylab("Axis.2") + scale_colour_discrete(name ="Phylum")
+pdf("pcoa_order.pdf", width=19, height=9)
+p2 <- ggplot(new, aes(x = new$Axis.1, y= new$Axis.2, label=new$Var1)) + geom_point(aes(size=new$Freq, color = new$Var1)) + theme_bw() + scale_size(guide=F, range = c(6,15)) + xlab("Axis.1") + ylab("Axis.2") + scale_colour_discrete(name ="Order")+guides(colour = guide_legend(title.hjust = 0.5))
 grid.arrange(p1, p2, ncol=2)
 dev.off()
 
