@@ -10,6 +10,7 @@ import sys
 
 File = sys.argv[1]
 Targets = sys.argv[2]
+Out = sys.argv[3]
 counter = {}
 
 #build a dictionary mapping barcode to sample 
@@ -36,10 +37,13 @@ with open(File, 'r') as FastaFile:
         SequenceID = SequenceHeader[0].strip('>').strip(':')
         Sequence = FastaFile.readline()
         SampleID = '%s_%s' %(Sample, str(counter[Sample]))
-        NewFile = 'qiime_formated.fasta' 
-        with open(NewFile, 'a') as OutFile:
+        with open(Out, 'a') as OutFile:
             OutFile.write('>%s %s orig_bc=%s new_bc=%s bc_diffs=0\n' %(SampleID, SequenceID, Barcode, Barcode))
             OutFile.write(Sequence)
 
-with open('temp_read_dictionary.txt', 'w') as DICTfile:
+BaseDirList = Out.rstrip("/").split("/")
+BaseDir = "/".join(BaseDirList[:len(BaseDirList)-2])
+TempDic = "%s/%s" %(BaseDir, "temp_read_dictionary.txt")
+
+with open(TempDic, 'w') as DICTfile:
     DICTfile.write(str(counter))

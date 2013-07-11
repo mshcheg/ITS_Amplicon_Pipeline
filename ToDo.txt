@@ -14,7 +14,7 @@ library(reshape)
 xtabs(groups.5$Abundance ~ groups.5$OTU + groups.5$Sample, groups.5)
 melt(table)
 ggplot(table.m.s, aes(groups.5.Sample, groups.5.OTU)) + geom_tile(aes(fill = value), col='white') + scale_fill_gradient(low = "#461b7e", high = "white")+ theme(axis.text.y = element_text(size="8"), axis.text.x = element_text(size="14", angle=45, hjust=1)) + labs(x = "", y = "")
-
-
+9. Phylogenetic beta diversity metrics (http://qiime.org/scripts/beta_diversity_metrics.html). Need fungl ITS phylogeny? Will alignment of representitive OTU sequences be meaningful?
+10. Add metedata to mapping file (year).
 
 

@@ -1,0 +1,8 @@
+OutDir = /home/mshcheglovitova/Amplicon_Test_Run/PipeTest
+R1 =/home/mshcheglovitova/Amplicon_Test_Run/reads/R1_test.fastq  
+CPU = 15
+Target = /home/mshcheglovitova/Amplicon_Test_Run/reads/targets.txt  
+R2 = /home/mshcheglovitova/Amplicon_Test_Run/reads/R2_test.fastq
+Plots= 3H 4H 4L
+Description=This is my description
+Metrics = bray_curtis,euclidean 

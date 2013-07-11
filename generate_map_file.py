@@ -51,14 +51,18 @@ Number = {"1H":2,"2H":4,"3H":6,"4H":8,"1L":1,"2L":3,"3L":5,"4L":7}
 parser=argparse.ArgumentParser(description='Generate metadata mapping file for Qiime.')
 parser.add_argument('-p', type=str, nargs='+')
 parser.add_argument('-d', type=str, nargs='+')
+parser.add_argument('-o', type=str, nargs=1)
 
 args = parser.parse_args()
 Plot = args.p
 Description = args.d
+OutDir = args.o[0]
 
 print 'A mapping file for plots %s will be generated with the following columns: SampleID, BarcodeSequence, LinkerPrimerSequence, Plot, TreeSpCode, Description. The BarcodeSequence and LinkerPrimerSequence columns will be left blank. The Description column will contain tree species names for each sample. The description for this experiment will be: %s.' %(', '.join(Plot), ' '.join(Description))
 
-with open('map.txt', 'w') as outfile:
+Out = "%s/map.txt" %OutDir
+
+with open(Out, 'w') as outfile:
     outfile.write("#SampleID\tBarcodeSequence\tLinkerPrimerSequence\tPlot\tTreeSpCode\tDescription\n#%s\n" %' '.join(Description))
     for myPlot in Plot:
         for myLetter, myList in Letter.items():
