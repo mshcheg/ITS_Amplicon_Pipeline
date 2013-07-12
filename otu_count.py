@@ -6,9 +6,12 @@ creates a file summarizing read counts and OTU counts per sample
 import sys
 
 OTUfile = sys.argv[1]
+inDir = sys.argv[2]
+outDir = sys.argv[3]
 
+TempFile = "%s/temp_read_dictionary.txt" %inDir
 OTUs = {}
-Counts = open('temp_read_dictionary.txt','r').read() 
+Counts = open(TempFile,'r').read() 
 Counts = eval(Counts)
 
 if 'PrimerType' in Counts: del Counts['PrimerType']
@@ -26,7 +29,8 @@ with open(OTUfile, 'r') as INfile:
             except KeyError:
                 OTUs[item] = [line[0]]
 
-with open('Read_OTU_Counts.csv','w') as outfile:
+outFile = "%s/Read_OTU_Counts.csv" %outDir
+with open(outFile,'w') as outfile:
     outfile.write('Sample, Reads, OTUs\n')
     for sample in Counts.keys():
         try:

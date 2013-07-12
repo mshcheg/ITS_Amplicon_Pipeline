@@ -33,7 +33,7 @@ while read line; do
         METRICS=`echo $line | awk -F "=" ' { print $2 } ' | sed 's/^\s//'`
     else
         echo "An unknown setting was provided in the config file: "$line
-        exit
+        exit 1
     fi
 done < $CONFIG
 
@@ -49,12 +49,19 @@ READ_NUMBER=`grep -c "@HWI-M013" $R1`
 mkdir -p  $OUTDIR/PandaSeq
 echo -e "Aligning paired end reads.\n" >> $OUTDIR/PipeStatus.txt
 pandaseq -f $R1 -r $R2 -u $OUTDIR/PandaSeq/unpaired.fasta > $OUTDIR/PandaSeq/paired.fasta 2>> $OUTDIR/PipeStatus.txt
+if [ $? -eq 0 ]; then
+    echo -e "Reads aligned successfully.\n" >> $OUTDIR/PipieStatus.txt 
+else
+    echo -e "Reads did not align successfully, exiting." >> $OUTDIR/PipeStatus.txt
+    exit 1
+fi
+
 #Summarize pandaseq alignment
 ALIGNED=`grep -c ">HWI" $OUTDIR/PandaSeq/paired.fasta` 
 UNALIGNED=`grep -c ">HWI" $OUTDIR/PandaSeq/unpaired.fasta` 
 let " LOW_QUALITY = $READ_NUMBER - $ALIGNED - $UNALIGNED "
 echo -e "Total number of reads: $READ_NUMBER\nAligned: $ALIGNED\nNot Aligned: $UNALIGNED\nLow Quality: $LOW_QUALITY" > $OUTDIR/PandaSeq/alignment_summery.txt
-        
+
 #PandaSeq inserts a “-” between high-quality paired end reads that do not overlap. These sequences are placed in the unpaired.fastq file. For down stream analyses the “-” needs to be replaced with an “N”.
 #replace '-' only on lines that do not contain '>HWI-'
 sed '/>HWI\-/!s/\-/N/' $OUTDIR/PandaSeq/unpaired.fasta > $OUTDIR/PandaSeq/unpaired_N.fasta
@@ -66,25 +73,56 @@ cat $OUTDIR/PandaSeq/unpaired_N.fasta $OUTDIR/PandaSeq/paired.fasta > $OUTDIR/Pa
 mkdir -p $OUTDIR/ITSx
 echo -e "\nExtracting ITS sequences.\n" >> $OUTDIR/PipeStatus.txt
 ITSx -i $OUTDIR/PandaSeq/both.fasta -o $OUTDIR/ITSx/ITSx_out -t F -cpu $CPU -p $ITSxHMMs 2>> $OUTDIR/PipeStatus.txt 
-       
+if [ $? -eq 0 ]; then
+    echo -e "ITS reads extracted successfully.\n" >> $OUTDIR/PipieStatus.txt 
+else
+    echo -e "ITS reads were not extracted successfully, exiting." >> $OUTDIR/PipeStatus.txt
+    exit 1
+fi
+
 #Format ITS fasta file for use with Qiime pipeline. The targets file maps sequences to barcodes and is provided by the sequenceing center.
 echo -e "\nFormatting FASTA file for OTU clustering.\n" >> $OUTDIR/PipeStatus.txt
-python format_for_qiime.py $OUTDIR/ITSx/ITSx_out.full.fasta $TARGETS $OUTDIR/ITSx/Qiime_Formatted.fasta
-echo -e "Formatted file, Qiime_Formatted.fasta, created in "$OUTDIR"/ITSx\n" >> $OUTDIR/PipeStatus.txt 
+python format_for_qiime.py $OUTDIR/ITSx/ITSx_out.full.fasta $TARGETS $OUTDIR/ITSx/Qiime_Formatted.fasta 2>> $OUTDIR/PipeStatus.txt
+if [ $? -eq 0 ]; then
+    echo -e "Formatted file, Qiime_Formatted.fasta, created in "$OUTDIR"/ITSx\n" >> $OUTDIR/PipeStatus.txt 
+else
+    echo -e "\nA formatted file was not created, exiting." >> $OUTDIR/PipeStatus.txt
+    exit 1
+fi
+
 
 #Create a parameters file called params.txt.
 echo -e "assign_taxonomy:rdp_max_memory 100000\npick_otus:enable_rev_strand_match True\npick_otus:max_accepts 1\npick_otus:max_rejects 8\npick_otus:stepwords 8\npick_otus:word_length 8\nassign_taxonomy:id_to_taxonomy_fp $IDtoTaxonomy\nassign_taxonomy:reference_seqs_fp $REFSEQ\nbeta_diversity:metrics $METRICS" > $OUTDIR/params.txt
 
 #Create a mapping file with metadata for each sample called map.txt. This file can be created maually according the the specifications on the Qiime website or automatically using generate_map_file.py.
 #-p is a list of plot ids, -d is a description of the experiment
-python generate_map_file.py -p $PLOTS -d $DESCRIP -o $OUTDIR >> $OUTDIR/PipeStatus.txt        
+python generate_map_file.py -p $PLOTS -d $DESCRIP -o $OUTDIR 1>> $OUTDIR/PipeStatus.txt 2 >> $OUTDIR/PipeStatus.txt        
+if [ $? -ne 0 ]; then
+    echo -e "\nA mapping file was not created, exiting." >> $OUTDIR/PipeStatus.txt
+    exit 1
+fi
 
 #Generate 97% simmilarity OTUs using uclust and 97% simmilarity reference OTUs from UNITE. This is done using the pick_open_reference_otus pipeline in Qiime.
-pick_open_reference_otus.py -i $OUTDIR/ITSx/Qiime_Formatted.fasta -r $REFSEQ -o $OUTDIR/otus -p $OUTDIR/params.txt --suppress_align_and_tree
+echo -e "Clustering sequeces into 97% simmilarity OTUs using Uclust and the Qiime pick_open_reference_otus.py pipeline. This may take a while.\n" >> $OUTDIR/PipeStatus.txt
+pick_open_reference_otus.py -i $OUTDIR/ITSx/Qiime_Formatted.fasta -r $REFSEQ -o $OUTDIR/otus -p $OUTDIR/params.txt --suppress_align_and_tree 2>> $OUTDIR/PipeStatus.txt
+if [ $? -eq 0 ]; then
+    echo -e "OTU clustering completed successfully. Output files are in $OUTDIR/otus.\n" >> $OUTDIR/PipeStatus.txt 
+else
+    echo -e "\nOTU clustering was not successful, exiting." >> $OUTDIR/PipeStatus.txt
+    exit 1
+fi
 
 #Extract and plot number of sequences and OTUs per sample.
 #the input file for this script is often called final_otu_map_mc2.txt 
-#python otu_count.py /path/to/final_OTU_file.txt
+mkdir $OUTDIR/plots
+echo -e "Summarizing OTU and read counts for each sample.\n" >> $OUTDIR/PipeStatus.txt
+python otu_count.py $OUTDIR/otus/final_otu_map_mc2.txt $OUTDIR 2>> $OUTDIR/PipeStatus.txt
+if [ $? -eq 0 ]; then
+    echo -e "Read and OTU summary file, Read_OTU_Counts.csv, created in "$OUTDIR"/plots.\n" >> $OUTDIR/PipeStatus.txt 
+else
+    echo -e "\nA file summarizing OTU and read counts was not created successfully, exiting." >> $OUTDIR/PipeStatus.txt
+    exit 1
+fi
 #Generate summery OTU and read plots
 #R CMD BATCH plot_reads_OTUs.R 
 
