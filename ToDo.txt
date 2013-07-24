@@ -4,6 +4,7 @@ To Do:
 2. Write install.sh.
 
 3. Figure out what kind of filtering to do on OTUs (exclude singletons?, http://joey711.github.io/phyloseq/preprocess.html)
+    *Jeff: need to redo clustering after filtering. -- ??
 4. Figure out how to compress taxonomic levels in barplots (if abundance < mean, group as other?)
 5. coustomize analysis so that plots can be generated for binned data (year 1 vs year 3 ...)
 6. fungal taxonomy pie chart on tree species phylogeny (http://rgraphgallery.blogspot.com/2013/04/rg-plot-bar-or-pie-chart-over-world-map.html, phyloseq: http://joey711.github.io/phyloseq/plot_tree-examples.html, phyloseq R code here: http://joey711.github.io/phyloseq/tutorials-index.html)
@@ -16,5 +17,14 @@ melt(table)
 ggplot(table.m.s, aes(groups.5.Sample, groups.5.OTU)) + geom_tile(aes(fill = value), col='white') + scale_fill_gradient(low = "#461b7e", high = "white")+ theme(axis.text.y = element_text(size="8"), axis.text.x = element_text(size="14", angle=45, hjust=1)) + labs(x = "", y = "")
 9. Phylogenetic beta diversity metrics (http://qiime.org/scripts/beta_diversity_metrics.html). Need fungl ITS phylogeny? Will alignment of representitive OTU sequences be meaningful?
 10. Add metedata to mapping file (year).
+11. De-novo OTU clustering 
+  *Jeff: mothur, cluster used but sometimes frowned upon, good to look at different approaches (crop - Bayesian approach to clustering), cluster in mothur clusters hierarchically, uclust not hierarchical? (how different if you try different clustering) -- Try different clustering methods
+12. SATe alignment of ITS (http://www.plosone.org/article/info:doi/10.1371/journal.pone.0019039)
+13. Jeff: ordination vs histogram results look different -- check this
+14. Jeff: nothing about error correction in sequences (e.g., homologous base calls in 454). programs can identify and correct for these (acacia) -- Is error correction necessary for MiSeq?
+15. Jeff: Legendre RDA, Variance partitioning, Indicator analyses for important taxa, matrix correlations between wood traits and fungal to see what pops out
+  *binary character ok but multi state
+  *multinmial ade4 function to convert discrete categorical to binary duty.hill smith 
+
 
 
